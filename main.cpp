@@ -1,3 +1,4 @@
+//g++ -o prueba main.cpp  -std=c++11 `pkg-config --cflags --libs opencv4`
 #include "crearMatriz.cpp"
 #include "escribirArchivos.cpp"
 #include "leerArchivos.cpp"
@@ -13,44 +14,32 @@ void imprimir_matriz(vector<vector<int>> matriz) {
 	}
 }
 
+
+void imprimir_matriz_imagen(vector<vector<vector<int>>> matriz_imagen) {
+	for (auto const& fila: matriz_imagen) {
+		for (vector<int> pixel: fila) {
+			cout << pixel[0] << " " << pixel[1] << " " << pixel[2] << endl;
+		}
+	}
+}
+
 int main(int argc, char *argv[]) {
-	if (argc != 3) {
-		cerr << "uso: " << argv[0] << "<filas> <columnas>";
+	if (argc != 2) {	
+		cerr << "uso: " << argv[0] << "<nombre_imagen>";
 		return 1;
 	}
 
-	vector<vector<int>> matriz = crear_matriz(stoi(argv[1]), stoi(argv[2]));
+	string nombre_imagen = argv[1];
 
-	cout << "MATRIZ CREADA" << endl;
+	vector<vector<vector<int>>> matriz_imagen = leer_imagen();
 
-	imprimir_matriz(matriz);
+	escribir_archivo_plano(matriz_imagen);
 
-	escribir_archivo_plano(matriz);
+	escribir_archivo_binario(matriz_imagen);
 
-	escribir_archivo_binario(matriz);
+	vector<vector<vector<int>>> matriz_leida_binario = leer_archivo_binario("binario.bin");
 
-
-
-
-	cout << endl << "MATRIZ LEIDA TEXTO" << endl;
-
-	vector<vector<int>> matriz_leida_texto = leer_archivo_texto("matriz.txt");
-
-	imprimir_matriz(matriz_leida_texto);
-
-
-
-	cout << endl << "MATRIZ LEIDA BINARIO" << endl;
-
-	vector<vector<int>> matriz_leida_binario = leer_archivo_binario("matriz.bin");
-
-	
-
-	imprimir_matriz(matriz_leida_binario);
-
-
-
-	
+	generar_imagen(matriz_leida_binario);
 	return 0;
 }
 

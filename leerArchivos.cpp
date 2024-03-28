@@ -3,8 +3,11 @@
 #include <fstream>
 #include <sstream>
 #include <bitset>
+#include <opencv2/opencv.hpp>
 
+using namespace cv;
 using namespace std;
+
 
 
 vector<vector<int>> leer_archivo_texto(string nombre_archivo) {
@@ -47,35 +50,69 @@ vector<vector<int>> leer_archivo_texto(string nombre_archivo) {
 
 
 
-vector<vector<int>> leer_archivo_binario(string nombre_archivo) {
+vector<vector<vector<int>>> leer_archivo_binario(string nombre_archivo) {
     ifstream archivo(nombre_archivo, ios::binary);
-    int filas;
-    int columnas;
-    int numero;
+    vector<vector<vector<int>>> matriz;
 
     if (archivo.is_open()) {
-        archivo.read(reinterpret_cast<char*>(&filas), sizeof(filas));
-        archivo.read(reinterpret_cast<char*>(&columnas), sizeof(columnas));
+        unsigned short binario_filas, binario_columnas;
+        archivo.read(reinterpret_cast<char*>(&binario_filas), sizeof(binario_filas));
+        archivo.read(reinterpret_cast<char*>(&binario_columnas), sizeof(binario_columnas));
 
-        vector<vector<int>> matriz(filas, vector<int>(columnas));
+        int filas = static_cast<int>(binario_filas);
+        int columnas = static_cast<int>(binario_columnas);
 
-        bitset<8> bits;
+        matriz.resize(filas, vector<vector<int>>(columnas, vector<int>(3)));
 
         for (int i = 0; i < filas; ++i) {
             for (int j = 0; j < columnas; ++j) {
-                if (archivo.read(reinterpret_cast<char*>(&bits), sizeof(bits))) {
-                    numero = static_cast<int>(bits.to_ulong());
-                    matriz[i][j] = numero;
-                } else {
-                    cout << "Error al leer el archivo binario." << endl;
-                    return {{}};
+                for (int k = 0; k < 3; ++k) {
+                    unsigned short binario_color;
+                    archivo.read(reinterpret_cast<char*>(&binario_color), sizeof(binario_color));
+                    matriz[i][j][k] = static_cast<int>(binario_color);
                 }
             }
         }
 
-        return matriz;
-    } else {
-        cout << "Hubo un error al abrir el archivo binario." << endl;
-        return {{}};
+        archivo.close();
     }
+
+    return matriz;
+}
+
+
+vector<vector<vector<int>>> leer_imagen() {
+
+    cv::Mat imagen = cv::imread("lena.png", cv::IMREAD_COLOR);
+
+    if (imagen.empty()) {
+        cout << "No se pudo cargar la imagen." << endl;
+        return {{{}}};  
+    }
+
+    int filas = imagen.rows;
+    int columnas = imagen.cols;
+    int canales = imagen.channels();
+
+    cout << "Dimensiones de la imagen: " << imagen.rows << "x" << imagen.cols << endl;
+    cout << "Número de canales: " << imagen.channels() << endl;
+
+
+    vector<vector<vector<int>>> matriz_imagen(filas, vector<vector<int>>(columnas, vector<int>(3)));
+
+    for (int i = 0; i < filas; ++i) {
+        for (int j = 0; j < columnas; ++j) {
+
+            int azul_actual = static_cast<int>(imagen.at<Vec3b>(i, j)[0]);
+            int verde_actual = static_cast<int>(imagen.at<Vec3b>(i, j)[1]);
+            int rojo_actual = static_cast<int>(imagen.at<Vec3b>(i, j)[2]);
+
+            vector<int> pixel_actual = {azul_actual, verde_actual, rojo_actual};
+
+            matriz_imagen[i][j] = pixel_actual;
+
+        }
+    }
+
+    return matriz_imagen;
 }
