@@ -1,5 +1,4 @@
 //g++ -o prueba main.cpp  -std=c++11 `pkg-config --cflags --libs opencv4`
-#include "crearMatriz.cpp"
 #include "escribirArchivos.cpp"
 #include "leerArchivos.cpp"
 using namespace std;

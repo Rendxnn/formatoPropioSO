@@ -29,7 +29,7 @@ void escribir_archivo_plano(vector<vector<vector<int>>> matriz) {
 
 
 void escribir_archivo_binario(vector<vector<vector<int>>> matriz) {
-    ofstream archivo("binario.bin", ios::binary);
+    ofstream archivo("binario.medic", ios::binary);
 
     if (archivo.is_open()) {
         int filas = matriz.size();
@@ -71,6 +71,7 @@ void generar_imagen(vector<vector<vector<int>>> matriz_imagen) {
     }
 
     cv::imshow("imagen leida", imagen);
+    cv::imwrite("imagen_salida.jpg", imagen);
     cv::waitKey(0);
 
 
