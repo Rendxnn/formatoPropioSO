@@ -29,9 +29,47 @@ void escribir_archivo_plano(vector<vector<vector<int>>> matriz) {
 
 
 void escribir_archivo_binario(vector<vector<vector<int>>> matriz) {
-    ofstream archivo("binario.medic", ios::binary);
+
+    string nombre;
+    string edad;
+    string altura;
+    string peso;
+    string cedula;
+    string diagnostico;
+
+    vector<int> longitudes_maximas = {30, 3, 3, 3, 10, 100};
+
+    ofstream archivo("binario.bin", ios::binary);
 
     if (archivo.is_open()) {
+        
+        cout << "Ingrese los siguientes datos: " << endl << "nombre" << endl << "edad" << endl << "altura" << endl << "peso" << endl << "cedula" << endl << "diagnostico" << endl << endl;
+
+        getline(cin, nombre);
+        cin >> edad;
+        cin >> altura;
+        cin >> peso;
+        cin >> cedula;
+        cin.ignore();
+        getline(cin, diagnostico);
+
+        vector<string> datos = {nombre, edad, altura, peso, cedula, diagnostico};
+
+        for (int i = 0; i < datos.size(); i++) {
+            string dato = datos[i];
+            for (int j = 0; j < longitudes_maximas[i]; j++) {
+                if (j >= dato.length()) {
+                    unsigned char caracter = 0; 
+                    archivo.write(reinterpret_cast<const char*>(&caracter), sizeof(caracter));
+                }
+                else {
+                    unsigned char caracter = dato[j];
+                    archivo.write(reinterpret_cast<const char*>(&caracter), sizeof(caracter));
+                }
+            }
+        }
+
+
         int filas = matriz.size();
         int columnas = matriz[0].size();
 
@@ -44,13 +82,15 @@ void escribir_archivo_binario(vector<vector<vector<int>>> matriz) {
         for (vector<vector<int>> fila: matriz) {
             for (vector<int> pixel: fila) {
                 for (int color: pixel) {
-                    unsigned short binario = static_cast<unsigned short>(color);
+                    unsigned char binario = static_cast<unsigned char>(color);
                     archivo.write(reinterpret_cast<const char*>(&binario), sizeof(binario)); 
                 }
             }
         }
     }
 }
+
+
 
 
 void generar_imagen(vector<vector<vector<int>>> matriz_imagen) {

@@ -51,10 +51,35 @@ vector<vector<int>> leer_archivo_texto(string nombre_archivo) {
 
 
 vector<vector<vector<int>>> leer_archivo_binario(string nombre_archivo) {
+
     ifstream archivo(nombre_archivo, ios::binary);
     vector<vector<vector<int>>> matriz;
 
     if (archivo.is_open()) {
+        string nombre;
+        string edad;
+        string altura;
+        string peso;
+        string cedula;
+        string diagnostico;
+
+        vector<string> datos(6);
+        vector<string> nombres_datos = {"nombre", "edad", "altura", "peso", "cedula", "diagnostico"};
+        vector<int> longitudes_maximas = {30, 3, 3, 3, 10, 100};
+
+        cout << "DATOS DEL PACIENTE: " << endl;
+        for (int i = 0; i < longitudes_maximas.size(); i++) {
+            int longitud = longitudes_maximas[i];
+            string nombre_dato = nombres_datos[i];
+
+            unsigned char buffer[longitud];
+            archivo.read(reinterpret_cast<char*>(buffer), longitud);
+            string dato_actual(reinterpret_cast<char*>(buffer), longitud);
+
+            cout << nombre_dato << ": " << dato_actual << endl;
+        }
+
+
         unsigned short binario_filas, binario_columnas;
         archivo.read(reinterpret_cast<char*>(&binario_filas), sizeof(binario_filas));
         archivo.read(reinterpret_cast<char*>(&binario_columnas), sizeof(binario_columnas));
@@ -67,9 +92,9 @@ vector<vector<vector<int>>> leer_archivo_binario(string nombre_archivo) {
         for (int i = 0; i < filas; ++i) {
             for (int j = 0; j < columnas; ++j) {
                 for (int k = 0; k < 3; ++k) {
-                    unsigned short binario_color;
+                    unsigned char binario_color;
                     archivo.read(reinterpret_cast<char*>(&binario_color), sizeof(binario_color));
-                    matriz[i][j][k] = static_cast<int>(binario_color);
+                    matriz[i][j][k] = static_cast<int>(static_cast<unsigned char>(binario_color));
                 }
             }
         }

@@ -32,13 +32,12 @@ int main(int argc, char *argv[]) {
 
 	vector<vector<vector<int>>> matriz_imagen = leer_imagen();
 
-	escribir_archivo_plano(matriz_imagen);
-
 	escribir_archivo_binario(matriz_imagen);
 
 	vector<vector<vector<int>>> matriz_leida_binario = leer_archivo_binario("binario.bin");
 
 	generar_imagen(matriz_leida_binario);
+
 	return 0;
 }
 
